@@ -1,0 +1,7 @@
+com/example/cartservice/CartService.class
+com/example/cartservice/CartController.class
+com/example/cartservice/CartItem.class
+com/example/cartservice/config/SQLiteIdentityColumnSupport.class
+com/example/cartservice/CartItemRepository.class
+com/example/cartservice/CartServiceApplication.class
+com/example/cartservice/config/SQLiteDialect.class
