@@ -28,8 +28,8 @@ jobs:
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
 
       # Step 4: Generate a unique image tag from the Git commit SHA
       - name: Generate Image Tag
@@ -44,7 +44,7 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/cart-service:${{ steps.image_tag.outputs.tag }}
+          tags: ${{ secrets.DOCKER_USERNAME }}/cart-service:${{ steps.image_tag.outputs.tag }}
           labels: "revision=${{ github.sha }}"
 
       # Step 6: Check out the deployment repository to update the manifest
@@ -61,14 +61,14 @@ jobs:
       - name: Update Kubernetes Manifest
         run: |
           cd deploy-centre/kubernetes/cart
-          yq e '.spec.template.spec.containers[0].image = "${{ secrets.DOCKERHUB_USERNAME }}/cart-service:${{ steps.image_tag.outputs.tag }}"' -i deployment.yaml
+          yq e '.spec.template.spec.containers[0].image = "${{ secrets.DOCKER_USERNAME }}/cart-service:${{ steps.image_tag.outputs.tag }}"' -i deployment.yaml
 
       # Step 8: Commit the updated manifest and push it back to the deployment repository
       - name: Commit and Push Changes
         run: |
           cd deploy-centre
           git config --global user.name 'github-actions[bot]'
-          git config --global user.wilchristsebastian@gmail.com 'github-actions[bot]@users.noreply.github.com'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
           git add .
           # Commit only if there are changes
           if ! git diff --staged --quiet; then
