@@ -61,7 +61,7 @@ jobs:
       - name: Update Kubernetes Manifest
         run: |
           cd deploy-centre/kubernetes/cart
-          yq e '.spec.template.spec.containers[0].image = "${{ secrets.DOCKER_USERNAME }}/cart-service:${{ steps.image_tag.outputs.tag }}"' -i deployment.yaml
+          yq e '.spec.template.spec.containers[0].image = "${{ secrets.DOCKER_USERNAME }}/cart-service:${{ steps.image_tag.outputs.tag }}"' -i cart.yaml
 
       # Step 8: Commit the updated manifest and push it back to the deployment repository
       - name: Commit and Push Changes
