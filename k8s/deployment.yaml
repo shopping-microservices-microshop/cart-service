@@ -46,9 +46,3 @@ spec:
         - name: cart-storage
           persistentVolumeClaim:
             claimName: cart-db-pvc # Use the PersistentVolumeClaim created above.
----
-spec:
-  template:
-    spec:
-      containers:
-        - image: willchrist/cart-service:3821b60
