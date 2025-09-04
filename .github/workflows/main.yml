@@ -1,5 +1,5 @@
 # This workflow builds and pushes a Docker image for the cart-service to Docker Hub,
-# then updates the corresponding Kubernetes deployment file in the deploy-centre repository.
+# and updates the Kubernetes deployment file within this same repository.
 
 name: Build, Push, and Deploy Cart Service
 
@@ -15,9 +15,12 @@ jobs:
     runs-on: self-hosted
 
     steps:
-      # Step 1: Check out the source code of the cart-service
+      # Step 1: Check out the source code
+      # The checkout action now needs a PAT to be able to push back to the repo.
       - name: Checkout Application Code
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GIT_PAT }}
 
       # Step 2: Set up Docker Buildx for building Docker images
       - name: Set up Docker Buildx
@@ -47,29 +50,19 @@ jobs:
           tags: ${{ secrets.DOCKER_USERNAME }}/cart-service:${{ steps.image_tag.outputs.tag }}
           labels: "revision=${{ github.sha }}"
 
-      # Step 6: Check out the deployment repository to update the manifest
-      - name: Checkout Deployment Repo
-        uses: actions/checkout@v4
-        with:
-          repository: 'shopping-microservices-microshop/deploy-centre'
-          token: ${{ secrets.GIT_PAT }}
-          path: 'deploy-centre' # Checkout to a specific directory
-
-      # Step 7: Update the image tag in the Kubernetes deployment manifest
-      # This step requires 'yq' to be installed on your self-hosted runner.
-      # You can install it with: sudo wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq && sudo chmod +x /usr/bin/yq
+      # Step 6: Update the image tag in the local Kubernetes deployment manifest
+      # This step assumes your cart.yaml is in a 'k8s' directory.
+      # Please adjust the path if your file is located elsewhere.
       - name: Update Kubernetes Manifest
         run: |
-          cd deploy-centre/kubernetes/cart
-          yq e '.spec.template.spec.containers[0].image = "${{ secrets.DOCKER_USERNAME }}/cart-service:${{ steps.image_tag.outputs.tag }}"' -i cart.yaml
+          yq e '.spec.template.spec.containers[0].image = "${{ secrets.DOCKER_USERNAME }}/cart-service:${{ steps.image_tag.outputs.tag }}"' -i k8s/deployment.yaml
 
-      # Step 8: Commit the updated manifest and push it back to the deployment repository
+      # Step 7: Commit the updated manifest and push it back to this repository
       - name: Commit and Push Changes
         run: |
-          cd deploy-centre
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          git add .
+          git add k8s/cart.yaml
           # Commit only if there are changes
           if ! git diff --staged --quiet; then
             git commit -m "ci: Update cart-service image to ${{ steps.image_tag.outputs.tag }}"
