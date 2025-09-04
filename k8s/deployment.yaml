@@ -33,7 +33,7 @@ spec:
               mountPath: /app/data
       containers:
         - name: cart-service
-          image: willchrist/cart-service:efac7f0 # The Docker image to run.
+          image: willchrist/cart-service:9b5ce3e # The Docker image to run.
           ports:
             - containerPort: 8080 # The port the application listens on inside the container.
           env:
@@ -47,3 +47,8 @@ spec:
           persistentVolumeClaim:
             claimName: cart-db-pvc # Use the PersistentVolumeClaim created above.
 ---
+spec:
+  template:
+    spec:
+      containers:
+        - image: willchrist/cart-service:9b5ce3e
