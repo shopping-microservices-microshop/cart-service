@@ -13,6 +13,7 @@ jobs:
   build-and-deploy:
     # Use the self-hosted runner you have already configured
     runs-on: self-hosted
+    if: "!contains(github.event.head_commit.message, 'ci:')"
 
     steps:
       # Step 1: Check out the source code
