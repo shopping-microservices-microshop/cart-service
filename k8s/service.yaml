@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: cart-service # This name becomes the DNS name for other services to use.
+spec:
+  type: ClusterIP # Exposes the service only within the cluster.
+  selector:
+    app: cart-service # Forwards traffic to any pod with this label.
+  ports:
+    - protocol: TCP
+      port: 8080 # The port that other services will connect to.
+      targetPort: 8080 # The port on the pod to forward traffic to.
+  template:
+    spec:
+      containers:
+        - image: willchrist/cart-service:efac7f0
