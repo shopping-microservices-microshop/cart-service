@@ -33,7 +33,7 @@ spec:
               mountPath: /app/data
       containers:
         - name: cart-service
-          image: willchrist/cart-service:adadc56 # The Docker image to run.
+          image: willchrist/cart-service:d3d0a32 # The Docker image to run.
           ports:
             - containerPort: 8080 # The port the application listens on inside the container.
           env:
